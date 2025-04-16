@@ -1,172 +1,175 @@
-// Código base para aprendizado
-
 import java.util.Random;
 import java.util.Scanner;
 
-public class JogosCompartilhados {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        Random random = new Random();
+class Jogo {
+    public Scanner scanner;
+    public Random random;
+    public int tentativas;
 
-        // Escolher o jogo
-        System.out.println("Escolha o jogo:");
-        System.out.println("Jogo da Descoberta: 1");
-        System.out.println("Caça-palavras: 2");
-        System.out.print("E aí?! Qual jogo  você quer jogar?");
-        int escolha = scanner.nextInt();
-        scanner.nextLine(); 
-
-        // Jogo da Descoberta
-        if (escolha == 1) {
-            jogarJogoDescoberta(scanner, random);
-        }
-        // Caça-palavras
-        else if (escolha == 2) {
-            jogarCacaPalavras(scanner, random);
-        } else {
-            System.out.println("Escolha inválida.");
-        }
-
-        scanner.close();
+    // Construtor classe base
+    public Jogo() {
+        scanner = new Scanner(System.in);
+        random = new Random();
+        tentativas = 0;
     }
 
-    // Método para o Jogo da Descoberta
-    private static void jogarJogoDescoberta(Scanner scanner, Random random) {
-        String[] palavras = obterPalavras();
-        String palavraEscolhida = escolherPalavraAleatoria(palavras, random);
+    // dica
+    public static char[] mostrarDica(String palavra) {
+        char[] dica = new char[2];
+        dica[0] = palavra.charAt(0);
+        dica[1] = palavra.charAt(palavra.length() - 1);
+        return dica;
+    }
+
+    public void iniciarJogo() {
+        
+    }
+}
+
+
+public class JogoDaDescoberta extends Jogo {
+    String[] palavras = {
+        "rinoceronte", "idade", "instituto", "parana",
+        "macarronada", "cadeira", "carro", "celta",
+        "computador", "teclado", "informatica",
+        "ferro", "vida", "molhado", "alegria",
+        "felicidade", "caminhar", "corrida"
+    };
+
+   
+    public void iniciarJogo() {
+        String palavraEscolhida = palavras[random.nextInt(palavras.length)].toUpperCase;
         String palavraEmbaralhada = embaralharPalavra(palavraEscolhida, random);
-        String dica = criarDica(palavraEscolhida);
+        char[] dica = Jogo.mostrarDica(palavraEmbaralhada);
 
         System.out.println("Palavra embaralhada: " + palavraEmbaralhada);
-        System.out.println("Digite '!d' para receber uma dica ou '!q' para sair.");
-        System.out.println("Tente adivinhar a palavra!");
+        System.out.println("Digite \".dica\" para ter uma dica e \".sair\" para sair do jogo.");
 
-        int tentativas = 0;
-
+        
         while (true) {
-            System.out.print("Digite sua tentativa: ");
-            String tentativaUsuario = scanner.nextLine().toUpperCase();
+            System.out.print("Adivinhe: ");
+            String input = scanner.next().toUpperCase();
 
-            if (tentativaUsuario.equals("!D")) {
-                System.out.println("Dica: " + dica);
-                continue;
+            if (input.equals(".DICA")) {
+                System.out.println("Dica: a primeira letra é " + dica[0] + " e a última letra é " + dica[1]);
             }
-
-            if (tentativaUsuario.equals("!Q")) {
-                System.out.println("Você saiu do jogo. Tentativas feitas: " + tentativas);
+            if (input.equals(".SAIR")) {
+                System.out.println("Jogo finalizado. Tentativas: " + tentativas);
                 break;
             }
-
             tentativas++;
-
-            if (tentativaUsuario.equals(palavraEscolhida)) {
-                System.out.println("Parabéns! Você acertou a palavra em " + tentativas + " tentativas.");
+            if (input.equals(palavraEscolhida)) {
+                System.out.println("Parabéns, você é f#da, acertou! Tentativas: " + tentativas);
                 break;
             } else {
-                System.out.println("Essa não é a palavra. Tente novamente!");
+                System.out.println("Errouuu! Tentativas: " + tentativas);
             }
         }
     }
 
-    // Método para o jogo Caça-palavras
-    private static void jogarCacaPalavras(Scanner scanner, Random random) {
-        String[] palavras = obterPalavras();
-        String palavraEscolhida = escolherPalavraAleatoria(palavras, random);
-        String dica = criarDica(palavraEscolhida);
+    // Método que embaralha as palavras
+    private static String embaralharPalavra(String palavra, Random random) {
+        char[] letras = palavra.toCharArray();
+        for (int i = 0; i < letras.length; i++) {
+            int pos = random.nextInt(letras.length);
+            char temp = letras[i];
+            letras[i] = letras[pos];
+            letras[pos] = temp;
+        }
+        return new String(letras);
+    }
+}
 
-        // Gerar o tabuleiro
-        char[][] tabuleiro = gerarTabuleiro(palavraEscolhida, random);
-
-        System.out.println("Tabuleiro gerado. Tente encontrar a palavra!");
-        exibirTabuleiro(tabuleiro);
-
-        int tentativas = 0;
-
+// Caça-Palavras
+class CacaPalavras extends Jogo {
+    String[] palavras = {"agua", "camelo", "triste", "cambio", "sapos"};
+    
+    public void iniciarJogo() {
+        int tamanho = 10;
+       
+        char[][] tabuleiro = gerarMatrizVazia(tamanho);
+        preencherMatriz(tabuleiro, random);
+        String palavraEscolhida = palavras[random.nextInt(palavras.length)].toUpperCase();
+        inserirPalavraVertical(tabuleiro, palavraEscolhida, random);
+        
+        System.out.println("Caça-Paavras:");
+        imprimirMatriz(tabuleiro);
+        
+        char[] dica = Jogo.mostrarDica(palavraEscolhida);
+        System.out.println("Digite \".dica\" para receber uma dica e \".sair\" para sair do jogo.");
+        
         while (true) {
-            System.out.print("Digite sua tentativa: ");
-            String tentativaUsuario = scanner.nextLine().toUpperCase();
-
-            if (tentativaUsuario.equals("!D")) {
-                System.out.println("Dica: " + dica);
-                continue;
+            System.out.print("Tente adivinhar a palavra escondida: ");
+            String input = scanner.next().toUpperCase();
+            
+            if (input.equals(".DICA")) {
+                System.out.println("Dica: a primeira letra é " + dica[0] + " e a última letra é " + dica[1]);
             }
-
-            if (tentativaUsuario.equals("!Q")) {
-                System.out.println("Você saiu do jogo. Tentativas feitas: " + tentativas);
+            if (input.equals(".SAIR")) {
+                System.out.println("Jogo finalizado. Tentativas: " + tentativas);
                 break;
             }
-
             tentativas++;
-
-            if (tentativaUsuario.equals(palavraEscolhida)) {
-                System.out.println("Parabéns! Você encontrou a palavra em " + tentativas + " tentativas.");
+            if (input.equals(palavraEscolhida)) {
+                System.out.println("Parabéns, você é craque! Acertou! Tentativas: " + tentativas);
                 break;
             } else {
-                System.out.println("Essa não é a palavra. Tente novamente!");
+                System.out.println("Errouuu! Tentativas: " + tentativas);
             }
         }
     }
-
-    // Método para gerar o tabuleiro de caça-palavras com letras aleatórias
-    private static char[][] gerarTabuleiro(String palavra, Random random) {
-        int tamanho = 10; // Tamanho fixo do tabuleiro
-        char[][] tabuleiro = new char[tamanho][tamanho];
-
-        // Preenche o tabuleiro com letras aleatórias
-        for (int i = 0; i < tamanho; i++) {
-            for (int j = 0; j < tamanho; j++) {
-                tabuleiro[i][j] = (char) ('A' + random.nextInt(26));
+    
+    private static char[][] gerarMatrizVazia(int tamanho) {
+        return new char[tamanho][tamanho];
+    }
+    
+    private static void preencherMatriz(char[][] matriz, Random random) {
+        for (int i = 0; i < matriz.length; i++) {
+            for (int j = 0; j < matriz[i].length; j++) {
+                matriz[i][j] = (char) ('A' + random.nextInt(26));
             }
         }
-
-        // Coloca a palavra no tabuleiro em uma posição aleatória
-        int x = random.nextInt(tamanho);
-        int y = random.nextInt(tamanho - palavra.length());
-        for (int i = 0; i < palavra.length(); i++) {
-            tabuleiro[x][y + i] = palavra.charAt(i);
-        }
-
-        return tabuleiro;
     }
-
-    // Método para exibir o tabuleiro de caça-palavras
-    private static void exibirTabuleiro(char[][] tabuleiro) {
-        for (int i = 0; i < tabuleiro.length; i++) {
-            for (int j = 0; j < tabuleiro[i].length; j++) {
-                System.out.print(tabuleiro[i][j] + " ");
+    
+    private static void imprimirMatriz(char[][] matriz) {
+        for (int i = 0; i < matriz.length; i++) {
+            for (int j = 0; j < matriz[i].length; j++) {
+                System.out.print(matriz[i][j] + " ");
             }
             System.out.println();
         }
     }
-
-    // Método para retornar um array com algumas palavras
-    private static String[] obterPalavras() {
-        return new String[]{
-                "GATO", "CACHORRO", "BOLA", "SOL", "LUA", "COMPUTADOR", "MESA", "CADEIRA", "FLORESTA"
-        };
+    
+    private static void inserirPalavraVertical(char[][] matriz, String palavra, Random random) {
+        int linhas = matriz.length;
+        int colunas = matriz[0].length;
+        int linhaInicial = random.nextInt(linhas - palavra.length() + 1);
+        int coluna = random.nextInt(colunas);
+        for (int i = 0; i < palavra.length(); i++) {
+            matriz[linhaInicial + i][coluna] = palavra.charAt(i);
+        }
     }
+}
 
-    // Método para escolher uma palavra aleatória do array de palavras
-    private static String escolherPalavraAleatoria(String[] palavras, Random random) {
-        return palavras[random.nextInt(palavras.length)];
-    }
+public class JogosCompartilhados {
+    public static void main(String[] args) {
+        
+        System.out.println("Escolha o jogo:");
+        System.out.println("1 - Jogo da Descoberta");
+        System.out.println("2 - Caça-Palavras");
+        System.out.print("Digite 1 ou 2: ");
+        int escolha = scanner.nextInt();
 
-    // Método para embaralhar a palavra
-    private static String embaralharPalavra(String palavra, Random random) {
-        char[] letras = palavra.toCharArray();
-
-        for (int i = 0; i < letras.length; i++) {
-            int j = random.nextInt(letras.length);
-            char temp = letras[i];
-            letras[i] = letras[j];
-            letras[j] = temp;
+        Jogo jogo;
+        if (escolha == 1) {
+            jogo = new JogoDaDescoberta();
+        } else if (escolha == 2) {
+            jogo = new CacaPalavras();
+        } else {
+            System.out.println("Opção inválida!");
+            return;
         }
 
-        return new String(letras);
-    }
-
-    // Método para criar a dica com a primeira e última letra
-    private static String criarDica(String palavra) {
-        return "A palavra começa com " + palavra.charAt(0) + " e termina com " + palavra.charAt(palavra.length() - 1);
+        jogo.iniciarJogo();
     }
 }
