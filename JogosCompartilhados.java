@@ -1,7 +1,7 @@
 import java.util.Random;
 import java.util.Scanner;
 
-class Jogo {
+public class Jogo {
     public Scanner scanner;
     public Random random;
     public int tentativas;
@@ -12,7 +12,11 @@ class Jogo {
         random = new Random();
         tentativas = 0;
     }
-
+    // dica progressiva
+    char dicaPorIndice(String palavra, int i) {
+        return palavra.charAt(i);
+    }
+    
     // dica
     public static char[] mostrarDica(String palavra) {
         char[] dica = new char[2];
@@ -62,7 +66,7 @@ public class JogoDaDescoberta extends Jogo {
                 System.out.println("Parabéns, você é f#da, acertou! Tentativas: " + tentativas);
                 break;
             } else {
-                System.out.println("Errouuu! Tentativas: " + tentativas);
+                System.out.println("Maôe, Erouuu! Tentativas: " + tentativas);
             }
         }
     }
@@ -94,17 +98,31 @@ class CacaPalavras extends Jogo {
         
         System.out.println("Caça-Paavras:");
         imprimirMatriz(tabuleiro);
+
         
         char[] dica = Jogo.mostrarDica(palavraEscolhida);
         System.out.println("Digite \".dica\" para receber uma dica e \".sair\" para sair do jogo.");
-        
+        int contDica = 0
+
         while (true) {
             System.out.print("Tente adivinhar a palavra escondida: ");
             String input = scanner.next().toUpperCase();
             
-            if (input.equals(".DICA")) {
+            if (input.equals(".DICA") && contDica == 0) {
+                
                 System.out.println("Dica: a primeira letra é " + dica[0] + " e a última letra é " + dica[1]);
+                contDica++;
             }
+
+            else if (input.equals(".DICA") && contDica > 0) {
+                
+                System.out.println("Dica: a próxima dica de letra é " + dica[contDica]);
+            }
+
+            else if(input.equals(".DICA") && contDica > palavra.length){
+                System.out.println("Você não acha que já pediu dica demais, cara? Toma a palavra inteira então: " palavra);
+                
+
             if (input.equals(".SAIR")) {
                 System.out.println("Jogo finalizado. Tentativas: " + tentativas);
                 break;
