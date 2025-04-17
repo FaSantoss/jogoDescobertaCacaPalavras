@@ -9,7 +9,7 @@ public class JogoDaDescoberta Jogo {
 
    
     public void iniciarJogo() {
-        String palavraEscolhida = palavras[random.nextInt(palavras.length)].toUpperCase;
+        String palavraEscolhida = palavras[random.nextInt(palavras.length)].toUpperCase();
         String palavraEmbaralhada = embaralharPalavra(palavraEscolhida, random);
         char[] dica = Jogo.mostrarDica(palavraEmbaralhada);
 
