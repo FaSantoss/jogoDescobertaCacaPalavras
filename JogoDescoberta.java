@@ -1,4 +1,4 @@
-public class JogoDaDescoberta extends Jogo {
+public class JogoDaDescoberta Jogo {
     String[] palavras = {
         "rinoceronte", "idade", "instituto", "parana",
         "macarronada", "cadeira", "carro", "celta",
