@@ -1,52 +1,40 @@
-public class JogoDaDescoberta Jogo {
-    String[] palavras = {
-        "rinoceronte", "idade", "instituto", "parana",
-        "macarronada", "cadeira", "carro", "celta",
-        "computador", "teclado", "informatica",
-        "ferro", "vida", "molhado", "alegria",
-        "felicidade", "caminhar", "corrida"
-    };
+package com.projeto.jogos;
 
-   
-    public void iniciarJogo() {
-        String palavraEscolhida = palavras[random.nextInt(palavras.length)].toUpperCase();
-        String palavraEmbaralhada = embaralharPalavra(palavraEscolhida, random);
-        char[] dica = Jogo.mostrarDica(palavraEmbaralhada);
+public class JogoDescoberta {
+    private DicionarioPalavras dicionario;
+    private Dica dica;
+    private String palavraSecreta;
+    private String palavraEmbaralhada;     // letras misturadas
+    private boolean encerrado;             // ve se ainda tem jogo
 
-        System.out.println("Palavra embaralhada: " + palavraEmbaralhada);
-        System.out.println("Digite \".dica\" para ter uma dica e \".sair\" para sair do jogo.");
-
-        
-        while (true) {
-            System.out.print("Adivinhe: ");
-            String input = scanner.next().toUpperCase();
-
-            if (input.equals(".DICA")) {
-                System.out.println("Dica: a primeira letra é " + dica[0] + " e a última letra é " + dica[1]);
-            }
-            if (input.equals(".SAIR")) {
-                System.out.println("Jogo finalizado. Tentativas: " + tentativas);
-                break;
-            }
-            tentativas++;
-            if (input.equals(palavraEscolhida)) {
-                System.out.println("Parabéns, você é f#da, acertou! Tentativas: " + tentativas);
-                break;
-            } else {
-                System.out.println("Maôe, Erouuu! Tentativas: " + tentativas);
-            }
-        }
+    // construtor: dicas e dicionario
+    public JogoDescoberta(DicionarioPalavras dict, Dica dicaObj) {
+        dicionario = dict;
+        dica = dicaObj;
+        encerrado = false;
     }
 
-    // Método que embaralha as palavras
-    private static String embaralharPalavra(String palavra, Random random) {
-        char[] letras = palavra.toCharArray();
-        for (int i = 0; i < letras.length; i++) {
-            int pos = random.nextInt(letras.length);
-            char temp = letras[i];
-            letras[i] = letras[pos];
-            letras[pos] = temp;
-        }
-        return new String(letras);
+    // inicia o jogo: escolhe a palavra, embaralha e exibe
+    public void iniciar() {
+        palavraSecreta = dicionario.obterPalavraAleatoria();
+        palavraEmbaralhada = JogoUtil.embaralharPalavra(palavraSecreta);
+        System.out.println("Palavra embaralhada: " + palavraEmbaralhada);
+    }
+
+    // recebe uma tentativa e ve se está correta
+    public boolean tentar(String palpite) {
+        encerrado = JogoUtil.checarPalpite(palpite, palavraSecreta);
+        return encerrado;
+    }
+
+    // retona dica
+    public String obterDica() {
+        return dica.obterDica(palavraSecreta);
+    }
+
+    // acaba o jogo e exibe msg de desistencia
+    public void desistir() {
+        encerrado = true;
+        JogoUtil.desistir(palavraSecreta);
     }
 }
